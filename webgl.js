@@ -44,21 +44,24 @@ const sketch = ({ context }) => {
   
   const palette = random.pick(palettes)
   const meshes = [];
-  for(let i = 0; i < 25; i++) {
+  for(let i = 0; i < 45; i++) {
     const width = random.range(0.1, 1)
     const height = random.range(0.1, 1)
     const depth = random.range(0.01, 0.1)
-    const position = random.range(0, 6)
+    const z = random.range(0, 6)
+    const x = random.range(0, 3)
+    const y = random.range(0, 3)
     const seed = random.range(0, 10)
 
     const dimensions = { width, height, depth }
+    const positions = { x, y, z }
 
     const mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({color: random.pick(palette)}));
 
     mesh.scale.set(0.2, 0.2, 0.2);
     
     scene.add(mesh);
-    meshes.push({ mesh, dimensions, position, seed })
+    meshes.push({ mesh, dimensions, positions, seed })
   }
 
   const light = new THREE.DirectionalLight('white', 1);
@@ -102,10 +105,11 @@ const sketch = ({ context }) => {
       // controls.update();
       meshes.forEach(mesh => {
         const { width, height, depth } = mesh.dimensions
-        let position = mesh.position + (time * 0.05 * mesh.seed)
+        let { x, y, z } = mesh.positions
+        let computedZ = z + (time * 0.05 * mesh.seed)
         mesh.mesh.scale.set(width + 0.2 * Math.sin(time + mesh.seed), height + 0.4 * Math.cos(time + (mesh.seed - 5.6)), depth)
         mesh.mesh.scale.multiplyScalar(0.5)
-        mesh.mesh.position.set(0, 0, (position % 6) - 3)
+        mesh.mesh.position.set(x, y, (computedZ % 10) - 5)
       })
       scalarMultiplier = Math.sin(time)
       renderer.render(scene, camera);
